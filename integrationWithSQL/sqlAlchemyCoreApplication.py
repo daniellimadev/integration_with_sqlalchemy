@@ -65,7 +65,7 @@ for row in result:
 
 conn.close()
 
-# inserindo info na tabela user
+# inserting info into the user table
 sql_insert = text("INSERT INTO user VALUES (3, 'daniel', 'email@email.com', 'dani')")
 conn = engine.connect()
 result = conn.execute(sql_insert)
