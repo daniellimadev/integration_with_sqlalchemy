@@ -1,9 +1,12 @@
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm import Session
 from sqlalchemy import Column
+from sqlalchemy import create_engine
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import ForeignKey
+from sqlalchemy import inspect
 
 Base = declarative_base()
 
@@ -34,3 +37,37 @@ class Address(Base):
     
 print(User.__tablename__)
 print(Address.__tablename__)
+
+# connection to the database
+engine = create_engine("sqlite://")
+
+# Creating classes as tables in the database
+Base.metadata.create_all(engine)
+
+# Investigate the database schema
+inspect_engine = inspect(engine)
+print(inspect_engine.has_table("user_account"))
+
+print(inspect_engine.get_table_names())
+print(inspect_engine.default_schema_name)
+
+# Creating a session to persist data in SQLite
+with Session(engine) as session:
+    daniel = User(
+        name='daniel',
+        fullname='Daniel Pereira',
+        address=[Address(email_address='daniel@gmail.com')]
+    )
+    
+    aline = User(
+        name='aline',
+        fullname='Aline Barbosa',
+        address=[Address(email_address='aline1@gmail.com'),
+                 Address(email_address='aline2@email.org')]
+    )
+    
+    debora = User(name='debora', fullname='Debora Barbosa')
+    
+    # sending to the database (data persistence)
+    session.add_all([daniel, aline, debora])
+    session.commit()
